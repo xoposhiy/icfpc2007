@@ -133,13 +133,10 @@
     <Compile Include="DnaTemplate.cs" />
     <Compile Include="DnaTemplate_Should.cs" />
     <Compile Include="Dna_Should.cs" />
-    <Compile Include="EnumExtensions.cs" />
-    <Compile Include="FileSystemExtensions.cs" />
     <Compile Include="MoreExtensions.cs" />
     <Compile Include="Dna.cs" />
     <Compile Include="R.cs" />
     <Compile Include="RnaProcessor.cs" />
-    <Compile Include="V.cs" />
     <Compile Include="Vm.cs" />
     <Compile Include="Vm_Should.cs" />
   </ItemGroup>
