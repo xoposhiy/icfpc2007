@@ -2,11 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using MoreLinq;
 
 namespace lib
 {
     public static class DnaExtensions
     {
+        public static string EncodeStringAsDna(this string s, bool quoted = false)
+        {
+            return s.Select(c => ((int) c).EncodeDna(8, quoted)).ToDelimitedString("");
+        }
+        public static string EncodeDna(this int c, int len = 0, bool quoted = false)
+        {
+            var syms = quoted ? "CF" : "IC";
+            string s = "";
+            while (c > 0)
+            {
+                s += syms[c % 2];
+                c /= 2;
+            }
+            var padding = len - s.Length-1;
+            if (padding > 0) s += new string(syms[0], padding);
+            s += quoted ? "IC" : "P";
+            return s;
+        }
         public static Dna Substring(this Dna dna, int start, int exclusiveEnd)
         {
             exclusiveEnd = Math.Min(dna.Len, exclusiveEnd);

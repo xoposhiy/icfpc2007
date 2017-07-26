@@ -60,7 +60,7 @@ namespace lib
             bitmaps.Push(new Bmp());
         }
 
-        public event Action<RnaProcessor> OnImageChange;
+        public event Action<RnaProcessor, string> OnImageChange;
 
         public Bitmap ToBitmap()
         {
@@ -72,6 +72,8 @@ namespace lib
         }
 
         private bool firstLog = true;
+        public Dictionary<string, int> undocumentedRnas = new Dictionary<string, int>();
+
         public void Log(string s)
         {
             return;
@@ -104,6 +106,12 @@ namespace lib
             else if (r == "PCCPFFP") AddBitmap(new Bmp());
             else if (r == "PFFPCCP") Compose();
             else if (r == "PFFICCF") Clip();
+            else if (r == "CFPICFP" || r == "CIIIPPC" || r == "CIPICIC" || r == "CIIIICC") ;
+            else if (r[0] == 'C')
+            {
+                undocumentedRnas[r] = undocumentedRnas.GetOrDefault(r, 0) + 1;
+                //Changed(r);
+            }
             else IncCounter("bad");
         }
 
@@ -142,7 +150,7 @@ namespace lib
 
         private void Clip()
         {
-            Changed();
+            Changed("");
             Log($"clip");
             if (bitmaps.Count >= 2)
             {
@@ -169,7 +177,7 @@ namespace lib
         private void Compose()
         {
             Log("compose");
-            Changed();
+            Changed("");
             if (bitmaps.Count >= 2)
             {
                 IncCounter("compose");
@@ -200,7 +208,7 @@ namespace lib
 
         private void Fill(int x, int y, Color initial)
         {
-            Changed();
+            Changed("");
             IncCounter("fill");
             var q = new Queue<Tuple<int, int>>();
             q.Enqueue(Tuple.Create(x, y));
@@ -231,23 +239,12 @@ namespace lib
                     SetPixel(x, y + 1);
                 }
             }
-            Changed();
+            //Changed();
         }
 
-        private void Changed()
+        private void Changed(string rna)
         {
-            if (OnImageChange == null) return;
-            var pixels = bitmaps.Peek().Pixels;
-            for (var x = 0; x < 600; x++)
-                for (var y = 0; y < 600; y++)
-                {
-                    var p = pixels[x,y];
-                    if (p.R > 0 || p.G > 0 || p.B > 0)
-                    {
-                        OnImageChange(this);
-                        return;
-                    }
-                }
+            OnImageChange?.Invoke(this, rna);
         }
 
         private Color GetPixel(int x, int y)
@@ -283,7 +280,7 @@ namespace lib
 
         private void AddBitmap(Bmp bmp)
         {
-            Changed();
+            Changed("");
             Log("bmp");
             if (bitmaps.Count < 10)
             {

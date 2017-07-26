@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using MoreLinq;
 
 namespace lib
 {
@@ -41,11 +43,28 @@ namespace lib
                 res = res.Append(new Dna(word.ToArray()));
             return res;
         }
+
+        public DnaTemplate Ref(int blockIndex, int level)
+        {
+            Items.Add(new TRef(blockIndex, level));
+            return this;
+        }
+        public DnaTemplate Text(string dna)
+        {
+            Items.AddRange(dna.Select(c => new TSym(Dna.FromChar(c))));
+            return this;
+        }
+
+        public string Encode()
+        {
+            return Items.Select(i => i.Encode()).ToDelimitedString("") + "IIC";
+        }
     }
 
     public abstract class TBase
     {
         public abstract Dna Replace(Dna[] blocks);
+        public abstract string Encode();
     }
 
     public class TSym : TBase
@@ -65,6 +84,11 @@ namespace lib
         public override Dna Replace(Dna[] blocks)
         {
             return new Dna(new[] { Sym });
+        }
+
+        public override string Encode()
+        {
+            return new[] { "C", "F", "P", "IC" }[Sym];
         }
     }
     public class TRef : TBase
@@ -88,6 +112,11 @@ namespace lib
             var dna = BlockIndex >= blocks.Length ? Dna.Empty : blocks[BlockIndex];
             return dna.Protect(ProtectionLevel);
         }
+
+        public override string Encode()
+        {
+            return "IF" + ProtectionLevel.EncodeDna() + BlockIndex.EncodeDna();
+        }
     }
     public class TLen : TBase
     {
@@ -107,6 +136,12 @@ namespace lib
             var dna = BlockIndex >= blocks.Length ? Dna.Empty : blocks[BlockIndex];
             return dna.Len.AsDna();
         }
-    }
+
+        public override string Encode()
+        {
+			return "IIP" + BlockIndex.EncodeDna();
+
+		}
+	}
 
 }

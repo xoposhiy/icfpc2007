@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Shouldly;
@@ -20,12 +21,38 @@ namespace lib
         [TestCase("ICCP", 6)]
         [TestCase("CCCP", 7)]
         [TestCase("IIICP", 8)]
+        [TestCase("CCCCCCCCP", 255)]
         public void ReadNat(string input, int expected)
         {
             new DnaReader(input).ReadNat(out var finish)
                 .ShouldBe(expected);
             finish.ShouldBe(false);
         }
+
+        [Test]
+        public void ReadNats()
+        {
+            var s =
+                "ICIICICCIICPIICICCCCCP";
+            var r = new DnaReader(s);
+			var v = r.ReadNat(out var finish);
+			Console.WriteLine(v);
+            v = r.ReadNat(out finish);
+            Console.WriteLine(v);
+        }
+
+        [Test]
+        public void DoSomething_WhenSomething()
+        {
+            Console.WriteLine(1.EncodeDna(9));
+            Console.WriteLine(2.EncodeDna(9));
+            Console.WriteLine(3.EncodeDna(9));
+            Console.WriteLine(4.EncodeDna(9));
+            Console.WriteLine(255.EncodeDna(9));
+            Console.WriteLine("DNA".EncodeStringAsDna());
+            Console.WriteLine("DNA".EncodeStringAsDna(true));
+        }
+
         [TestCase("I")]
         [TestCase("IC")]
         [TestCase("C")]

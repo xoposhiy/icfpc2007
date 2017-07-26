@@ -7,6 +7,8 @@ namespace lib
 {
     public class Dna
     {
+        public const string AdapterMarker = "IFPICFPPCCC";
+        public const string BlueZoneStartMarker = "IFPICFPPCFIPP";
         public const byte I = 0;
         public const byte C = 1;
         public const byte F = 2;
